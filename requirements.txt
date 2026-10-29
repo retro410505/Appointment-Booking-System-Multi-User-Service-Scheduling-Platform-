@@ -1,0 +1,11 @@
+# ==============================================================================
+# Appointment Booking System - Python Dependencies
+# ==============================================================================
+# Core Flask web framework
+Flask>=3.0.0
+
+# User session and authentication management
+Flask-Login>=0.6.3
+
+# Password hashing utilities and WSGI tools
+Werkzeug>=3.0.0

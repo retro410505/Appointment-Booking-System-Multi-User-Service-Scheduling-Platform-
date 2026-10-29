@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Provider Profile{% endblock %}
+{% block content %}
+<h2>Edit Profile</h2>
+<form method="POST" style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); margin-top: 1rem;">
+    <label>Category:</label>
+    <input type="text" name="category" value="{{ profile.category }}" required style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+
+    <label>Bio:</label>
+    <textarea name="bio" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">{{ profile.bio }}</textarea>
+
+    <label>Experience:</label>
+    <textarea name="experience" style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">{{ profile.experience }}</textarea>
+
+    <button type="submit" style="background: var(--color-primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer;">Save Changes</button>
+</form>
+{% endblock %}

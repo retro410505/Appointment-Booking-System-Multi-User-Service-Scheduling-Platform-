@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}Provider Dashboard{% endblock %}
+{% block content %}
+<h2>Provider Dashboard</h2>
+<p>Welcome, {{ current_user.name }}! (Service Provider)</p>
+
+<!-- Quick Navigation Links -->
+<div style="margin: 1rem 0; display: flex; gap: 1rem;">
+    <a href="{{ url_for('provider_profile') }}" style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none; color: var(--color-primary);">Edit Profile</a>
+    <a href="{{ url_for('provider_services') }}" style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none; color: var(--color-primary);">Manage Services</a>
+    <a href="{{ url_for('provider_slots') }}" style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-decoration: none; color: var(--color-primary);">Manage Slots</a>
+</div>
+
+<!-- =================================================================== -->
+<!-- Incoming Pending Requests Section                                   -->
+<!-- =================================================================== -->
+<section style="margin-top: 2rem;">
+    <h3>Pending Booking Requests <span class="badge badge-warning">{{ pending_count }}</span></h3>
+    {% if pending_requests %}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                <th style="padding: 0.75rem;">Customer</th>
+                <th style="padding: 0.75rem;">Service</th>
+                <th style="padding: 0.75rem;">Date & Time</th>
+                <th style="padding: 0.75rem;">Notes</th>
+                <th style="padding: 0.75rem;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in pending_requests %}
+            <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: 0.75rem;">{{ req.customer_name }}</td>
+                <td style="padding: 0.75rem;">{{ req.service_name }}</td>
+                <td style="padding: 0.75rem;">{{ req.slot_date }} {{ req.start_time }}</td>
+                <td style="padding: 0.75rem;">{{ req.notes }}</td>
+                <td style="padding: 0.75rem; display: flex; gap: 0.5rem;">
+                    <form action="{{ url_for('provider_booking_action', booking_id=req.id) }}" method="POST">
+                        <input type="hidden" name="action" value="confirm">
+                        <button type="submit" style="background: var(--color-success); color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">Confirm</button>
+                    </form>
+                    <form action="{{ url_for('provider_booking_action', booking_id=req.id) }}" method="POST">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" style="background: var(--color-danger); color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">No pending booking requests.</p>
+    {% endif %}
+</section>
+
+<!-- =================================================================== -->
+<!-- Appointment History Section                                         -->
+<!-- =================================================================== -->
+<section style="margin-top: 2rem;">
+    <h3>Appointment History</h3>
+    {% if all_bookings %}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                <th style="padding: 0.75rem;">ID</th>
+                <th style="padding: 0.75rem;">Customer</th>
+                <th style="padding: 0.75rem;">Service</th>
+                <th style="padding: 0.75rem;">Date & Time</th>
+                <th style="padding: 0.75rem;">Status</th>
+                <th style="padding: 0.75rem;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in all_bookings %}
+            <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: 0.75rem;">{{ b.id }}</td>
+                <td style="padding: 0.75rem;">{{ b.customer_name }}</td>
+                <td style="padding: 0.75rem;">{{ b.service_name }}</td>
+                <td style="padding: 0.75rem;">{{ b.slot_date }} {{ b.start_time }}</td>
+                <td style="padding: 0.75rem;"><span class="badge badge-{{ b.status }}">{{ b.status|capitalize }}</span></td>
+                <td style="padding: 0.75rem;">
+                    {% if b.status == 'confirmed' %}
+                        <form action="{{ url_for('provider_booking_action', booking_id=b.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="complete">
+                            <button type="submit" style="background: var(--color-primary); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem;">Complete</button>
+                        </form>
+                        <form action="{{ url_for('provider_booking_action', booking_id=b.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="cancel">
+                            <button type="submit" style="background: var(--color-danger); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem;">Cancel</button>
+                        </form>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">No appointment history found.</p>
+    {% endif %}
+</section>
+{% endblock %}

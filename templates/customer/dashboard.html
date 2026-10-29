@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Customer Dashboard{% endblock %}
+{% block content %}
+<h2>My Bookings</h2>
+
+{% for status, bookings in bookings.items() %}
+    <h3>{{ status|capitalize }} Bookings</h3>
+    {% if bookings %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Provider</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.service_name }}</td>
+                    <td>{{ booking.provider_name }}</td>
+                    <td>{{ booking.slot_date }}</td>
+                    <td>{{ booking.start_time }}</td>
+                    <td><span class="badge badge-{{ booking.status }}">{{ booking.status|capitalize }}</span></td>
+                    <td>
+                        {% if booking.status in ['pending', 'confirmed'] %}
+                            <form method="POST" action="{{ url_for('cancel_booking', booking_id=booking.id) }}" style="display:inline; margin-bottom: 0;">
+                                <button type="submit" onclick="return confirm('Are you sure?')">Cancel</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No {{ status }} bookings.</p>
+    {% endif %}
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Provider Registration{% endblock %}
+{% block content %}
+<h2>Provider Registration</h2>
+<form method="POST">
+    <input type="text" name="name" placeholder="Full Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password (min 6 chars)" required>
+    <input type="text" name="category" placeholder="Category" required>
+    <textarea name="bio" placeholder="Bio"></textarea>
+    <textarea name="experience" placeholder="Experience"></textarea>
+    <button type="submit">Register</button>
+</form>
+{% endblock %}

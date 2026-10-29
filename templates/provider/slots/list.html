@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Manage Slots{% endblock %}
+{% block content %}
+<h2>Manage Appointment Slots</h2>
+
+<!-- Add Slot Form -->
+<form method="POST" style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); margin-top: 1rem;">
+    <h3>Add New Slot</h3>
+    <label>Date:</label>
+    <input type="date" name="slot_date" required style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+    <label>Start Time:</label>
+    <input type="time" name="start_time" required style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+    <label>End Time:</label>
+    <input type="time" name="end_time" required style="width: 100%; padding: 0.5rem; margin-bottom: 1rem;">
+    <button type="submit" style="background: var(--color-primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer;">Add Slot</button>
+</form>
+
+<!-- Slots List -->
+<h3 style="margin-top: 2rem;">Your Upcoming Slots</h3>
+{% if slots %}
+<table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+    <thead>
+        <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+            <th style="padding: 0.75rem;">Date</th>
+            <th style="padding: 0.75rem;">Start</th>
+            <th style="padding: 0.75rem;">End</th>
+            <th style="padding: 0.75rem;">Status</th>
+            <th style="padding: 0.75rem;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in slots %}
+        <tr style="border-bottom: 1px solid var(--color-border);">
+            <td style="padding: 0.75rem;">{{ s.slot_date }}</td>
+            <td style="padding: 0.75rem;">{{ s.start_time }}</td>
+            <td style="padding: 0.75rem;">{{ s.end_time }}</td>
+            <td style="padding: 0.75rem;">
+                {% if s.is_booked %}
+                    <span class="badge" style="background: var(--color-danger-bg); color: var(--color-danger);">Booked</span>
+                {% else %}
+                    <span class="badge badge-success">Available</span>
+                {% endif %}
+            </td>
+            <td style="padding: 0.75rem;">
+                {% if not s.is_booked %}
+                    <form action="{{ url_for('provider_delete_slot', slot_id=s.id) }}" method="POST">
+                        <button type="submit" style="background: var(--color-danger); color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">Delete</button>
+                    </form>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color: var(--color-text-muted); margin-top: 0.5rem;">No slots created yet.</p>
+{% endif %}
+{% endblock %}

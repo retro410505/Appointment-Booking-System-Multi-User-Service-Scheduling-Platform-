@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- ======================================================================= -->
+<!-- Appointment Booking System - Base Layout Template                       -->
+<!-- ======================================================================= -->
+<!-- Provides the overarching HTML5 document structure, viewport settings,    -->
+<!-- global navigation bar, flash notification area, and content blocks      -->
+<!-- for all extending application views.                                     -->
+<!-- ======================================================================= -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Appointment Booking System{% endblock %}</title>
+
+    <!-- Global Base Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- =================================================================== -->
+    <!-- Navigation Bar Placeholder                                          -->
+    <!-- =================================================================== -->
+    <header class="navbar-wrapper">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <a href="{{ url_for('index') }}" class="brand-link">Appointment System</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link">Home</a></li>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.role == 'admin' %}
+                        <li class="nav-item"><a href="{{ url_for('admin_dashboard') }}" class="nav-link">Admin Dashboard</a></li>
+                    {% elif current_user.role == 'provider' %}
+                        {% if current_user.is_approved %}
+                            <li class="nav-item"><a href="{{ url_for('provider_dashboard') }}" class="nav-link">Provider Dashboard</a></li>
+                        {% else %}
+                            <li class="nav-item"><a href="{{ url_for('pending_approval') }}" class="nav-link">Pending Approval</a></li>
+                        {% endif %}
+                    {% elif current_user.role == 'customer' %}
+                        <li class="nav-item"><a href="{{ url_for('customer_dashboard') }}" class="nav-link">Customer Dashboard</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+                {% else %}
+                    <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                    <li class="nav-item"><a href="{{ url_for('register_customer') }}" class="nav-link">Register Customer</a></li>
+                    <li class="nav-item"><a href="{{ url_for('register_provider') }}" class="nav-link">Register Provider</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- =================================================================== -->
+    <!-- Flash Messages Container                                            -->
+    <!-- =================================================================== -->
+    <div class="container messages-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages" id="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span class="alert-text">{{ message }}</span>
+                            <button type="button" class="alert-close" aria-label="Close" onclick="this.parentElement.remove();">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- Main Content Area                                                   -->
+    <!-- =================================================================== -->
+    <main class="container main-content">
+        {% block content %}
+            <section class="hero-card">
+                <h1>Hello</h1>
+                <p class="subtitle">Welcome to the Appointment Booking System foundation.</p>
+                <div class="status-indicator">
+                    <span class="badge badge-success">Foundation Ready</span>
+                    <span class="badge badge-info">SQLite Database Connected</span>
+                </div>
+            </section>
+        {% endblock %}
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- Footer Placeholder                                                  -->
+    <!-- =================================================================== -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>&copy; 2026 Appointment Booking System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Global Application JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

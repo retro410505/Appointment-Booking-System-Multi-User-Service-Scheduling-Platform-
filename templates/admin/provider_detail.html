@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Provider Detail{% endblock %}
+{% block content %}
+<h2>Provider: {{ user.name }}</h2>
+<div style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); margin-top: 1rem;">
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Category:</strong> {{ profile.category }}</p>
+    <p><strong>Bio:</strong> {{ profile.bio }}</p>
+    <p><strong>Experience:</strong> {{ profile.experience }}</p>
+</div>
+
+<h3 style="margin-top: 2rem;">Services</h3>
+{% if services %}
+<table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+    <thead>
+        <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+            <th style="padding: 0.75rem;">Name</th>
+            <th style="padding: 0.75rem;">Duration</th>
+            <th style="padding: 0.75rem;">Price</th>
+            <th style="padding: 0.75rem;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in services %}
+        <tr style="border-bottom: 1px solid var(--color-border);">
+            <td style="padding: 0.75rem;">{{ s.name }}</td>
+            <td style="padding: 0.75rem;">{{ s.duration_minutes }} min</td>
+            <td style="padding: 0.75rem;">${{ s.price }}</td>
+            <td style="padding: 0.75rem; display: flex; gap: 0.5rem;">
+                <a href="{{ url_for('admin_edit_service', service_id=s.id) }}" style="color: var(--color-primary); text-decoration: none;">Edit</a>
+                <form action="{{ url_for('admin_delete_service', service_id=s.id) }}" method="POST">
+                    <button type="submit" style="background: none; border: none; color: var(--color-danger); cursor: pointer; padding: 0;">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No services listed.</p>
+{% endif %}
+{% endblock %}

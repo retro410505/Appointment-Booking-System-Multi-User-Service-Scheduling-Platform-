@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.name }} - Details{% endblock %}
+{% block content %}
+<h2>{{ user.name }}</h2>
+<p><strong>Category:</strong> {{ profile.category }}</p>
+<p>{{ profile.bio }}</p>
+
+<h3>Services</h3>
+<ul>
+    {% for service in services %}
+        <li>{{ service.name }} - ${{ service.price }} ({{ service.duration_minutes }} mins)</li>
+    {% endfor %}
+</ul>
+
+<h3>Available Slots</h3>
+{% if slots %}
+    <ul>
+        {% for slot in slots %}
+            <li>
+                {{ slot.slot_date }} | {{ slot.start_time }} - {{ slot.end_time }}
+                <a href="{{ url_for('book_appointment_form', slot_id=slot.id) }}">Book Now</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No available slots.</p>
+{% endif %}
+{% endblock %}

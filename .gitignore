@@ -1,0 +1,16 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment & instance variables
+.env
+.venv
+env/
+venv/
+ENV/
+instance/
+
+# SQLite databases (generated at runtime / seeding)
+*.sqlite3
+*.db-journal

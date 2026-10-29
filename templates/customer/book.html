@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Book Appointment{% endblock %}
+{% block content %}
+<h2>Book Appointment</h2>
+<p>Provider: {{ slot.provider_name }}</p>
+<p>Date: {{ slot.slot_date }}</p>
+<p>Time: {{ slot.start_time }} - {{ slot.end_time }}</p>
+
+<form method="POST" action="{{ url_for('book_appointment', slot_id=slot.id) }}">
+    <label for="service_id">Select Service:</label>
+    <select name="service_id" id="service_id" required>
+        {% for service in services %}
+            <option value="{{ service.id }}">{{ service.name }} - ${{ service.price }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="notes">Notes (optional):</label>
+    <textarea name="notes" id="notes"></textarea>
+    <br>
+    <button type="submit">Submit Booking</button>
+</form>
+{% endblock %}

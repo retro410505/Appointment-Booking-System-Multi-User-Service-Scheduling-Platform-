@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<p>Welcome, {{ current_user.name }}! (Administrator)</p>
+
+<!-- =================================================================== -->
+<!-- Summary Cards Section                                               -->
+<!-- =================================================================== -->
+<div class="summary-cards" style="display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap;">
+    <div style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); flex: 1; min-width: 200px;">
+        <h3>Customers</h3>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--color-primary);">{{ customers_count }}</p>
+    </div>
+    <div style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); flex: 1; min-width: 200px;">
+        <h3>Approved Providers</h3>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--color-success);">{{ approved_providers_count }}</p>
+    </div>
+    <div style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); flex: 1; min-width: 200px;">
+        <h3>Pending Providers</h3>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--color-warning);">{{ pending_providers_count }}</p>
+    </div>
+    <div style="background: var(--color-surface); border: 1px solid var(--color-border); padding: 1.5rem; border-radius: var(--radius-md); flex: 1; min-width: 200px;">
+        <h3>Total Bookings</h3>
+        <p style="font-size: 2rem; font-weight: 700; color: var(--color-info);">{{ total_bookings_count }}</p>
+    </div>
+</div>
+
+<!-- =================================================================== -->
+<!-- Pending Provider Registrations Section                              -->
+<!-- =================================================================== -->
+<section style="margin-top: 2rem;">
+    <h3>Pending Provider Registrations</h3>
+    {% if pending_providers %}
+    <table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                <th style="padding: 0.75rem;">Name</th>
+                <th style="padding: 0.75rem;">Email</th>
+                <th style="padding: 0.75rem;">Registered</th>
+                <th style="padding: 0.75rem;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in pending_providers %}
+            <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: 0.75rem;">{{ p.name }}</td>
+                <td style="padding: 0.75rem;">{{ p.email }}</td>
+                <td style="padding: 0.75rem;">{{ p.created_at }}</td>
+                <td style="padding: 0.75rem; display: flex; gap: 0.5rem;">
+                    <form action="{{ url_for('admin_approve_provider', user_id=p.id) }}" method="POST">
+                        <button type="submit" style="background: var(--color-success); color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">Approve</button>
+                    </form>
+                    <form action="{{ url_for('admin_reject_provider', user_id=p.id) }}" method="POST">
+                        <button type="submit" style="background: var(--color-danger); color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">No pending provider registrations.</p>
+    {% endif %}
+</section>
+
+<!-- =================================================================== -->
+<!-- Customers Management Section                                        -->
+<!-- =================================================================== -->
+<section style="margin-top: 2rem;">
+    <h3>Customers</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                <th style="padding: 0.75rem;">Name</th>
+                <th style="padding: 0.75rem;">Email</th>
+                <th style="padding: 0.75rem;">Status</th>
+                <th style="padding: 0.75rem;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in customers %}
+            <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: 0.75rem;">{{ c.name }}</td>
+                <td style="padding: 0.75rem;">{{ c.email }}</td>
+                <td style="padding: 0.75rem;">
+                    {% if c.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge" style="background: var(--color-danger-bg); color: var(--color-danger);">Deactivated</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 0.75rem;">
+                    <form action="{{ url_for('admin_toggle_user_active', user_id=c.id) }}" method="POST">
+                        <button type="submit" style="background: {% if c.is_active %}var(--color-danger){% else %}var(--color-success){% endif %}; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">
+                            {% if c.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<!-- =================================================================== -->
+<!-- Providers Management Section                                        -->
+<!-- =================================================================== -->
+<section style="margin-top: 2rem;">
+    <h3>Approved Service Providers</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 0.75rem; background: var(--color-surface);">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                <th style="padding: 0.75rem;">Name</th>
+                <th style="padding: 0.75rem;">Email</th>
+                <th style="padding: 0.75rem;">Status</th>
+                <th style="padding: 0.75rem;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in providers %}
+            <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: 0.75rem;">{{ p.name }}</td>
+                <td style="padding: 0.75rem;">{{ p.email }}</td>
+                <td style="padding: 0.75rem;">
+                    {% if p.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge" style="background: var(--color-danger-bg); color: var(--color-danger);">Deactivated</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 0.75rem; display: flex; gap: 0.5rem; align-items: center;">
+                    <a href="{{ url_for('admin_provider_detail', user_id=p.id) }}" style="color: var(--color-primary); text-decoration: none; font-weight: 500;">View Profile</a>
+                    <form action="{{ url_for('admin_toggle_user_active', user_id=p.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" style="background: {% if p.is_active %}var(--color-danger){% else %}var(--color-success){% endif %}; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: var(--radius-sm); cursor: pointer;">
+                            {% if p.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<!-- =================================================================== -->
+<!-- Bookings Management Section                                         -->
+<!-- =================================================================== -->
+<section style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h3>Bookings Overview</h3>
+        <form method="GET" style="display: flex; gap: 0.5rem; align-items: center;">
+            <label for="status">Filter by Status:</label>
+            <select name="status" id="status" onchange="this.form.submit()" style="padding: 0.35rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+                <option value="">All</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+        </form>
+    </div>
+    {% if bookings %}
+    <table style="width: 100%; border-collapse: collapse; background: var(--color-surface);">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--color-border); text-align: left;">
+                <th style="padding: 0.75rem;">ID</th>
+                <th style="padding: 0.75rem;">Customer</th>
+                <th style="padding: 0.75rem;">Provider</th>
+                <th style="padding: 0.75rem;">Service</th>
+                <th style="padding: 0.75rem;">Status</th>
+                <th style="padding: 0.75rem;">Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bookings %}
+            <tr style="border-bottom: 1px solid var(--color-border);">
+                <td style="padding: 0.75rem;">{{ b.id }}</td>
+                <td style="padding: 0.75rem;">{{ b.customer_name }}</td>
+                <td style="padding: 0.75rem;">{{ b.provider_name }}</td>
+                <td style="padding: 0.75rem;">{{ b.service_name }}</td>
+                <td style="padding: 0.75rem;">
+                    <span class="badge badge-{{ b.status }}">{{ b.status|capitalize }}</span>
+                </td>
+                <td style="padding: 0.75rem;">{{ b.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: var(--color-text-muted);">No bookings found.</p>
+    {% endif %}
+</section>
+{% endblock %}

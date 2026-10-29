@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Browse Providers{% endblock %}
+{% block content %}
+<h2>Our Service Providers</h2>
+
+<!-- Search and Filter Form -->
+<form method="GET" action="{{ url_for('list_providers') }}" class="mb-4">
+    <input type="text" name="keyword" placeholder="Search services..." value="{{ keyword }}">
+    <input type="text" name="category" placeholder="Category" value="{{ category }}">
+    <button type="submit">Filter</button>
+    <a href="{{ url_for('list_providers') }}">Clear</a>
+</form>
+
+<!-- Providers List -->
+{% if providers %}
+    {% for provider in providers %}
+        <div class="provider-card mb-3 p-3 border">
+            <h3>{{ provider.name }}</h3>
+            <p><strong>Category:</strong> {{ provider.category }}</p>
+            <p>{{ provider.bio }}</p>
+            <h4>Services:</h4>
+            <ul>
+                {% for service in provider.services %}
+                    <li>{{ service.name }} - ${{ service.price }} ({{ service.duration_minutes }} mins)</li>
+                {% endfor %}
+            </ul>
+            <a href="{{ url_for('provider_detail', provider_id=provider.id) }}">View Profile & Book</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No providers found.</p>
+{% endif %}
+{% endblock %}
