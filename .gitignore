@@ -14,3 +14,7 @@ instance/
 # SQLite databases (generated at runtime / seeding)
 *.sqlite3
 *.db-journal
+
+# Database & logs
+*.db
+*.log
